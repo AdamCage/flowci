@@ -1,0 +1,65 @@
+flowchart TB
+    subgraph INPUT["1. Источники информации"]
+        TG["Telegram<br/>Текст, голос, файлы, поручения"]
+        IDE["Codex / Cursor / OpenCode<br/>Работа с проектами"]
+        EVENTS["События и расписание<br/>Таймеры, изменения Git, проверки"]
+    end
+
+    subgraph AGENT["2. Task Agent"]
+        INGEST["Получение и анализ информации"]
+        SEARCH["Поиск связанных задач<br/>и существующего контекста"]
+        DECIDE{"Что необходимо сделать?"}
+        CREATE["Создать задачу"]
+        UPDATE["Обновить задачу<br/>или добавить результат"]
+        RECORD["Сохранить информацию<br/>без создания задачи"]
+        ASK["Уточнить неизвестное<br/>через Telegram"]
+    end
+
+    subgraph DATA["3. Хранение"]
+        VIK["Vikunja<br/>Задачи, планы, сроки, статусы"]
+        ART["Артефакты<br/>Git, файлы, эксперименты"]
+        DOC["Документация<br/>Markdown / BookStack позже"]
+    end
+
+    subgraph USE["4. Использование информации"]
+        PLAN["Планирование<br/>Сегодня / завтра / неделя"]
+        REMIND["Умные напоминания<br/>Просрочки, блокеры, таймеры"]
+        REPORT["Отчёты<br/>Результаты, планы, статистика"]
+    end
+
+    TG --> INGEST
+    IDE -->|"Skill task-sync"| INGEST
+    EVENTS --> INGEST
+
+    INGEST --> SEARCH
+    SEARCH --> DECIDE
+
+    DECIDE --> CREATE
+    DECIDE --> UPDATE
+    DECIDE --> RECORD
+    DECIDE -->|"Недостаточно информации"| ASK
+    ASK --> TG
+
+    CREATE --> VIK
+    UPDATE --> VIK
+    RECORD --> ART
+    INGEST -->|"Исходные материалы"| ART
+    ART -->|"Долговременные знания"| DOC
+    ART -.->|"Ссылки на результаты"| VIK
+
+    VIK --> PLAN
+    VIK --> REMIND
+    VIK --> REPORT
+    ART --> REPORT
+    DOC --> REPORT
+
+    PLAN --> TG
+    REMIND --> TG
+    REPORT --> TG
+
+    classDef agent fill:#ede9fe,stroke:#a78bfa,color:#5b21b6
+    classDef storage fill:#dcfce7,stroke:#86efac,color:#166534
+    classDef output fill:#dbeafe,stroke:#60a5fa,color:#1e40af
+    class INGEST,SEARCH,DECIDE,CREATE,UPDATE,RECORD,ASK agent
+    class VIK,ART,DOC storage
+    class PLAN,REMIND,REPORT output

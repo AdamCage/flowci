@@ -1,0 +1,28 @@
+flowchart TB
+    USER["Сотрудник"]
+    TG["Telegram-бот<br/>Планы, вопросы, голосовые сообщения"]
+
+    IDE["IDE / Agent Harness<br/>Codex, Cursor, OpenCode<br/>+ Skill task-sync"]
+
+    AGENT["Task Agent<br/>Поиск задач и обновлений<br/>Планирование и отчёты<br/>Уточняющие вопросы"]
+
+    VIK["Vikunja<br/>Задачи, сроки, статусы"]
+    FILES["Артефакты проектов<br/>Git, Markdown, документы,<br/>эксперименты, CI/CD"]
+
+    USER <-->|"Поручения и получение информации"| TG
+    USER -->|"Работа"| IDE
+
+    TG <--> AGENT
+    IDE -->|"События и результаты работы"| AGENT
+    IDE <--> FILES
+
+    AGENT <-->|"Создание и обновление задач"| VIK
+    AGENT <-->|"Чтение результатов и ссылок"| FILES
+
+    classDef actor fill:#dbeafe,stroke:#60a5fa,color:#1e40af
+    classDef ai fill:#ede9fe,stroke:#a78bfa,color:#5b21b6
+    classDef storage fill:#dcfce7,stroke:#86efac,color:#166534
+
+    class USER,TG actor
+    class AGENT,IDE ai
+    class VIK,FILES storage

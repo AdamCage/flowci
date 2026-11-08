@@ -1,0 +1,42 @@
+flowchart LR
+    subgraph TRIGGERS["События"]
+        NEW["Назначена задача"]
+        CHANGE["Изменён статус"]
+        DAILY["Плановый опрос"]
+        TIMER["Пользовательский таймер"]
+        REQUEST["Запрос отчёта"]
+        DELETE["Отмена / удаление"]
+    end
+
+    subgraph AGENT["Task Agent"]
+        CHECK{"Проверка прав"}
+        ACTION["Подготовка действия"]
+    end
+
+    subgraph RESULTS["Результаты"]
+        NOTIFY["Сообщение сотруднику<br/>в Telegram"]
+        UPDATE["Запросить обновление<br/>через чат или харнесс"]
+        REMIND["Напомнить<br/>в установленное время"]
+        REPORT["Статистика / отчёт<br/>для руководителя"]
+        APPROVE["Отменить / удалить задачу"]
+        DENY["Отказать в операции"]
+    end
+
+    NEW --> ACTION
+    CHANGE --> ACTION
+    ACTION --> NOTIFY
+
+    DAILY --> UPDATE
+    TIMER --> REMIND
+
+    REQUEST --> CHECK
+    DELETE --> CHECK
+
+    CHECK -->|"Руководитель"| REPORT
+    CHECK -->|"Руководитель"| APPROVE
+    CHECK -->|"Нет полномочий"| DENY
+
+    classDef restricted fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+    classDef normal fill:#dcfce7,color:#166534,stroke:#86efac
+    class REPORT,APPROVE restricted
+    class NOTIFY,UPDATE,REMIND normal

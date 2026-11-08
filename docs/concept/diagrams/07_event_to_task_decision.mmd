@@ -1,0 +1,36 @@
+flowchart TD
+    NEW["Новая информация<br/>Из Telegram или харнесса"]
+    FACTS["Извлечь факты<br/>Планы, действия, результаты, ссылки"]
+    MATCH{"Есть связанная задача?"}
+
+    EXISTS["Дополнить существующую задачу"]
+    NEED{"Есть новое обязательство<br/>или самостоятельная работа?"}
+
+    NOTE["Сохранить заметку / результат"]
+    CREATE["Создать новую задачу"]
+    SPLIT{"Требуется декомпозиция?"}
+    CHILD["Создать связанные подзадачи"]
+
+    STATUS{"Есть основания<br/>менять статус?"}
+    KEEP["Оставить статус без изменений"]
+    PROPOSE["Предложить или выполнить<br/>разрешённый переход"]
+
+    FINISH["Сохранить изменения<br/>и ссылки на источники"]
+
+    NEW --> FACTS --> MATCH
+    MATCH -->|"Да"| EXISTS --> STATUS
+    MATCH -->|"Нет"| NEED
+
+    NEED -->|"Нет"| NOTE --> FINISH
+    NEED -->|"Да"| CREATE --> SPLIT
+
+    SPLIT -->|"Да"| CHILD --> STATUS
+    SPLIT -->|"Нет"| STATUS
+
+    STATUS -->|"Нет"| KEEP --> FINISH
+    STATUS -->|"Да"| PROPOSE --> FINISH
+
+    classDef decision fill:#fef3c7,stroke:#fbbf24,color:#92400e
+    classDef action fill:#ede9fe,stroke:#a78bfa,color:#5b21b6
+    class MATCH,NEED,SPLIT,STATUS decision
+    class FACTS,EXISTS,CREATE,CHILD,PROPOSE action

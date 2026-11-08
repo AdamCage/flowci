@@ -1,0 +1,91 @@
+flowchart TD
+    START(["Новая активность"])
+
+    SOURCE{"Источник"}
+    CHAT["Сообщение в Telegram<br/>Текст / файл / голос"]
+    WORK["Работа в IDE / харнесе"]
+
+    SAVE["Фиксация исходного артефакта<br/>Текст: 1 файл<br/>Голос: аудио + транскрипт"]
+    PROJECT["Проектная директория<br/>Контекст и материалы работы"]
+
+    AGENT["Task Agent"]
+    VALID{"Достаточно контекста?"}
+    ASK["Уточняющие вопросы<br/>через Telegram"]
+    SEARCH["Поиск существующих задач<br/>в Vikunja"]
+    EXISTS{"Задача существует?"}
+    UPDATE["Дополнить / исправить<br/>без обязательной смены статуса"]
+    CREATE["Создать задачу"]
+    SPLIT{"Нужна декомпозиция?"}
+    DECOMP["Создать подзадачи<br/>Общий тег / связи / ответственные"]
+    TASKS["Задачи в Vikunja"]
+
+    KIND{"Тип деятельности"}
+
+    ANALYTIC["Аналитическая / бюрократическая"]
+    APPLIED["Прикладная"]
+    ADMIN["Администрирование"]
+
+    AOUT["Документы / ТЗ / отчёты<br/>Соглашения / служебки<br/>Новые задачи ОСО / СИБ"]
+    POUT["Код / модели / эксперименты<br/>Системы и артефакты"]
+    IOUT["Деплой / конфигурация<br/>Перезапуск / обновление<br/>Изменения работающей системы"]
+
+    RESULT["Фиксация результата<br/>Файлы / ссылки / подтверждения"]
+    DOCS["BookStack<br/>Документация"]
+    SYNC["Обновление задачи<br/>в Vikunja"]
+    DONE{"Результат принят?"}
+    MORE["Доработка / новые задачи"]
+    FINISH(["Завершено"])
+
+    START --> SOURCE
+    SOURCE --> CHAT
+    SOURCE --> WORK
+
+    CHAT --> SAVE
+    WORK --> PROJECT
+    SAVE --> PROJECT
+    PROJECT --> AGENT
+
+    AGENT --> VALID
+    VALID -->|"Нет"| ASK
+    ASK --> AGENT
+    VALID -->|"Да"| SEARCH
+
+    SEARCH --> EXISTS
+    EXISTS -->|"Да"| UPDATE
+    EXISTS -->|"Нет"| CREATE
+    UPDATE --> SPLIT
+    CREATE --> SPLIT
+    SPLIT -->|"Да"| DECOMP
+    SPLIT -->|"Нет"| TASKS
+    DECOMP --> TASKS
+
+    TASKS --> KIND
+    KIND --> ANALYTIC
+    KIND --> APPLIED
+    KIND --> ADMIN
+
+    ANALYTIC --> AOUT
+    APPLIED --> POUT
+    ADMIN --> IOUT
+
+    AOUT --> RESULT
+    POUT --> RESULT
+    IOUT --> RESULT
+
+    RESULT --> SYNC
+    RESULT -->|"При необходимости"| DOCS
+    SYNC --> DONE
+
+    DONE -->|"Нет"| MORE
+    MORE --> AGENT
+    DONE -->|"Да"| FINISH
+
+    classDef agent fill:#ede9fe,color:#5b21b6,stroke:#a78bfa
+    classDef task fill:#dbeafe,color:#1e40af,stroke:#60a5fa
+    classDef output fill:#dcfce7,color:#166534,stroke:#86efac
+    classDef decision fill:#fef3c7,color:#92400e,stroke:#fbbf24
+
+    class AGENT,ASK,SEARCH,DECOMP agent
+    class TASKS,CREATE,UPDATE,SYNC task
+    class AOUT,POUT,IOUT,RESULT,DOCS output
+    class VALID,EXISTS,SPLIT,KIND,DONE decision

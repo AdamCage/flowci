@@ -1,0 +1,15 @@
+[project]
+name = "flowci"
+version = "0.1.0"
+description = "Локальный Task Agent: Telegram, Vikunja и RouterAI"
+requires-python = ">=3.11"
+readme = "README.md"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.setuptools.packages.find]
+where = ["src"]

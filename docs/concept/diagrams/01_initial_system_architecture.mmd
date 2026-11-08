@@ -1,0 +1,75 @@
+flowchart TB
+    subgraph USERS["Участники"]
+        direction LR
+        EMP["Сотрудники"]
+        MGR["Руководители"]
+    end
+
+    subgraph INTERFACE["Единый интерфейс взаимодействия"]
+        TG["Telegram-бот<br/>Текст / голос / файлы / диалог"]
+        STT["Распознавание речи<br/>Whisper"]
+    end
+
+    subgraph CORE["Центральный Task Agent"]
+        direction TB
+        AG["Агент управления задачами"]
+        ACL["Проверка ролей<br/>и полномочий"]
+        PLAN["Поиск задач, декомпозиция,<br/>уточнения и обновления"]
+        NOTIFY["Уведомления сотрудников"]
+        SCHED["Расписание, напоминания<br/>и отложенные таймеры"]
+        REPORT["Свободные и стандартные<br/>отчёты для руководителя"]
+    end
+
+    subgraph DEV["Агентская среда выполнения"]
+        direction TB
+        HARN["Codex / Cursor / OpenCode<br/>Агентские харнессы"]
+        SKILL["Обязательные Skills<br/>и Symphony-подобная спецификация"]
+        PROJ["Рабочие проекты<br/>Директории / Git / IDE"]
+        ART["Артефакты<br/>Файлы / результаты / изменения"]
+    end
+
+    subgraph STORAGE["Системы хранения и учёта"]
+        VIK["Vikunja<br/>Основной трекер"]
+        BOOK["BookStack<br/>Документация и знания"]
+        BANK["Банковский Redmine<br/>Обязательный официальный учёт"]
+    end
+
+    EMP --> TG
+    MGR --> TG
+    TG -->|"Голосовые сообщения"| STT
+    STT -->|"Текст + исходный файл"| AG
+    TG <-->|"Сообщения и ответы"| AG
+
+    AG --> ACL
+    AG <--> PLAN
+    AG <--> SCHED
+    AG --> NOTIFY
+    AG --> REPORT
+
+    PLAN <-->|"MCP / API"| VIK
+    PLAN <-->|"Структурированные данные"| BOOK
+
+    HARN <--> SKILL
+    SKILL <-->|"Протокол задач<br/>и синхронизация"| VIK
+    SKILL <-->|"Документация"| BOOK
+    HARN <--> PROJ
+    PROJ --> ART
+    ART -->|"Ссылки и результаты"| VIK
+
+    VIK -->|"Экспорт / синхронизация"| BANK
+    BANK -.->|"ID / результат переноса"| VIK
+
+    SCHED -->|"Запросы обновлений"| NOTIFY
+    VIK -->|"Назначения / смена статуса"| NOTIFY
+    NOTIFY --> TG
+    REPORT --> TG
+    ACL -->|"Удаление и отмена<br/>только руководителем"| VIK
+
+    classDef human fill:#dbeafe,color:#1e40af,stroke:#60a5fa
+    classDef agent fill:#ede9fe,color:#5b21b6,stroke:#a78bfa
+    classDef system fill:#dcfce7,color:#166534,stroke:#86efac
+    classDef legacy fill:#fee2e2,color:#991b1b,stroke:#fca5a5
+    class EMP,MGR human
+    class AG,ACL,PLAN,NOTIFY,SCHED,REPORT agent
+    class VIK,BOOK system
+    class BANK legacy

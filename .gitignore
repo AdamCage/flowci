@@ -1,0 +1,25 @@
+.env
+.env.*
+!.env.example
+data/
+tools/vikunja/
+.flowci/
+.cursor/plans/
+__pycache__/
+.venv/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.log
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.pyc
+
+# Local review archives may contain service data, credentials and model traces.
+# Keep the Markdown reviews public; retain their execution evidence locally.
+reviews/evidence/
+reviews/*-evidence/

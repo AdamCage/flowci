@@ -1,0 +1,52 @@
+flowchart TD
+    START(["Начало рабочего дня"])
+    COLLECT["Агент собирает контекст<br/>Задачи, сроки, вчерашние результаты,<br/>блокеры и изменения"]
+    PLAN["Формирует план<br/>Сегодня / завтра / неделя"]
+    SEND["Отправляет план в Telegram"]
+
+    WORK["Сотрудник работает<br/>IDE, эксперименты, встречи, документы"]
+
+    EVENT{"Появились новые сведения?"}
+    AUTO["Skill автоматически передаёт<br/>результаты работы харнесса"]
+    MANUAL["Сообщение сотрудника<br/>Текст / голос / файл"]
+
+    ANALYZE["Агент сопоставляет события<br/>с существующими задачами"]
+    QUESTION{"Нужны уточнения?"}
+    ASK["Короткий вопрос сотруднику"]
+    SAVE["Обновляет задачи и результаты<br/>Без обязательной смены статуса"]
+
+    REPLAN{"Нужно менять план?"}
+    CHANGE["Предлагает новый приоритет<br/>или перенос работы"]
+    CONTINUE["Актуальный план"]
+
+    CHECK["Проверка незавершённого<br/>и блокирующих проблем"]
+    REPORT["Сводка результатов и<br/>план следующих действий"]
+
+    START --> COLLECT --> PLAN --> SEND --> WORK
+    WORK --> EVENT
+    EVENT -->|"Да, из харнесса"| AUTO
+    EVENT -->|"Да, от сотрудника"| MANUAL
+    EVENT -->|"Пока нет"| CHECK
+
+    AUTO --> ANALYZE
+    MANUAL --> ANALYZE
+    ANALYZE --> QUESTION
+
+    QUESTION -->|"Да"| ASK --> ANALYZE
+    QUESTION -->|"Нет"| SAVE
+
+    SAVE --> REPLAN
+    REPLAN -->|"Да"| CHANGE --> CONTINUE
+    REPLAN -->|"Нет"| CONTINUE
+    CONTINUE --> WORK
+
+    CHECK --> REPORT
+    REPORT -->|"Следующий день"| START
+
+    classDef main fill:#ede9fe,stroke:#a78bfa,color:#5b21b6
+    classDef action fill:#dbeafe,stroke:#60a5fa,color:#1e40af
+    classDef result fill:#dcfce7,stroke:#86efac,color:#166534
+
+    class COLLECT,PLAN,ANALYZE,QUESTION,REPLAN,CHECK main
+    class WORK,AUTO,MANUAL,ASK action
+    class SEND,SAVE,CHANGE,CONTINUE,REPORT result
